@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Elements>
+
+    <WebElement name="loginFlow">
+        <css>#layer-login[style*='display: block']</css>
+    </WebElement>
+
+    <WebElement name="loginField">
+        <id>login</id>
+    </WebElement>
+
+    <WebElement name="passwordField">
+        <id>pwd</id>
+    </WebElement>
+
+    <WebElement name="signInButton">
+        <id>sign-in</id>
+    </WebElement>
+
+    <WebElement name="errorMessage">
+        <css>#alert-danger .inline-block</css>
+    </WebElement>
+
+    <WebElement name="loader">
+        <id>loading-indicator</id>
+    </WebElement>
+
+    <WebElement name="rememberMeCheckbox">
+        <id>remember_me</id>
+    </WebElement>
+</Elements>

@@ -1,0 +1,5 @@
+/build
+/.idea
+/config/testng/debug
+/out
+/*.iml

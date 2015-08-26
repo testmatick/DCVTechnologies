@@ -1,0 +1,453 @@
+<project name="DCVTechnologies" default="testAll">
+
+    <property name="src.dir" location="${basedir}${file.separator}src"/>
+    <property name="build.dir" location="${basedir}${file.separator}build"/>
+    <property name="config.dir" location="${basedir}${file.separator}config"/>
+    <property name="lib.dir" location="${basedir}${file.separator}lib"/>
+    <property name="browserdrivers.dir" location="${lib.dir}${file.separator}drivers"/>
+    <property name="uixmls.dir" location="${config.dir}${file.separator}uixmls"/>
+    <property name="testng.dir" location="${config.dir}${file.separator}testng"/>
+    <property name="reportNGcss" location="${config.dir}${file.separator}reportStyle.css"/>
+    <property name="bin.dir" location="${build.dir}${file.separator}bin"/>
+    <property name="jar.dir" location="${build.dir}${file.separator}jar"/>
+
+    <!--Target to detect current OS family and set it to ${platform}-->
+    <target name="setVariables" description="Set platform, browser, report directory variables">
+        <!--To use <if></if> need include contribution library-->
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+            <classpath>
+                <pathelement location="${lib.dir}${file.separator}ant${file.separator}ant-contrib-1.0b3.jar"/>
+            </classpath>
+        </taskdef>
+
+        <if>
+            <isset property="platform"/>
+            <else>
+                <condition property="platform" value="WINDOWS">
+                    <os family="windows"/>
+                </condition>
+                <condition property="platform" value="LINUX">
+                    <os family="unix"/>
+                </condition>
+                <condition property="platform" value="MAC">
+                    <os family="mac"/>
+                </condition>
+            </else>
+        </if>
+
+        <if>
+            <isset property="browser"/>
+            <else>
+                <property name="browser" value="chrome"/>
+            </else>
+        </if>
+
+        <property name="report.dir"
+                  value="${build.dir}${file.separator}reports${file.separator}${platform}${file.separator}${browser}"/>
+
+        <if>
+            <isset property="baseurl"/>
+            <else>
+                <property name="baseurl" value="https://demo.intelligentdataconnections.com"/>
+            </else>
+        </if>
+
+        <loadresource property="sitedomain">
+            <propertyresource name="baseurl"/>
+            <filterchain>
+                <tokenfilter>
+                    <replaceregex pattern="^(.*?[/]+)" replace=""/>
+                    <replaceregex pattern="([.]{1,}.*)$" replace=""/>
+                </tokenfilter>
+            </filterchain>
+        </loadresource>
+
+        <echo>Set variables: $${platform}=${platform};
+            $${browser}=${browser};${line.separator}$${report.dir}=${report.dir};${line.separator}$${baseurl}=${baseurl};
+            $${sitedomain}=${sitedomain};
+        </echo>
+    </target>
+
+    <target name="deleteSerializedData">
+        <!--To use <if></if> need include contribution library-->
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+            <classpath>
+                <pathelement location="${lib.dir}${file.separator}ant${file.separator}ant-contrib-1.0b3.jar"/>
+            </classpath>
+        </taskdef>
+        <!--<delete includeemptydirs="true">-->
+        <!--<fileset dir="${build.dir}" includes="serialized_*/**"/>-->
+        <!--</delete>-->
+
+        <if>
+            <isset property="serializeDir"/>
+            <then>
+                <delete includeemptydirs="true">
+                    <fileset dir="${serializeDir}" includes="serialized_*/**"/>
+                </delete>
+            </then>
+            <else>
+                <delete includeemptydirs="true">
+                    <fileset dir="${build.dir}" includes="serialized_*/**"/>
+                </delete>
+            </else>
+        </if>
+    </target>
+
+    <target name="prepare" depends="setVariables"
+            description="Create all needed dirs and build jar file with test classes">
+        <!--Delete bin directory-->
+        <delete dir="${bin.dir}"/>
+
+        <!--Create main dirs-->
+        <mkdir dir="${jar.dir}"/>
+        <mkdir dir="${bin.dir}"/>
+
+        <!--Delete old report-->
+        <delete dir="${report.dir}"/>
+        <mkdir dir="${report.dir}"/>
+        <echo file="${report.dir}${file.separator}fails">0</echo>
+        <echo file="${report.dir}${file.separator}suites"></echo>
+
+        <!--Create one jar file from all test classes-->
+        <path id="classpath">
+            <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        </path>
+        <javac srcdir="${src.dir}"
+               destdir="${bin.dir}"
+               debug="true"
+               includes="**/*.java"
+               classpathref="classpath"
+               includeantruntime="false"
+               debuglevel="lines,vars,source"/>
+        <jar destfile="${jar.dir}${file.separator}Tests.jar" basedir="${bin.dir}"/>
+    </target>
+
+    <target name="generateXSLTReport" depends="setVariables"
+            description="generate report in XSLT format and get chart in jpeg format">
+        <!--Generate report-->
+        <property name="output" value="${report.dir}${file.separator}xslt"/>
+        <mkdir dir="${output}"/>
+
+        <path id="classpath">
+            <fileset dir="${lib.dir}" includes="/xslt/*.jar"/>
+        </path>
+
+        <xslt in="${report.dir}${file.separator}testng-results.xml"
+              out="${output}/index.html"
+              classpathref="classpath"
+              style="${config.dir}${file.separator}testng-results.xsl"
+              processor="SaxonLiaison">
+            <param name="testNgXslt.outputDir" expression="${output}"/>
+            <param name="testNgXslt.sortTestCaseLinks" expression="true"/>
+            <param name="testNgXslt.testDetailsFilter" expression="FAIL,SKIP,PASS"/>
+        </xslt>
+
+        <!--Convert chart to .jpg-->
+        <java jar="${lib.dir}${file.separator}batik${file.separator}batik-rasterizer.jar" fork="true">
+            <arg line="-m image/jpeg"/>
+            <arg line="${output}${file.separator}overview-chart.svg"/>
+            <jvmarg value="-Djava.awt.headless=true"/>
+        </java>
+    </target>
+
+    <target name="convertCharts" description="Convert SVG pie chart to JPG format">
+        <java jar="${lib.dir}${file.separator}batik${file.separator}batik-rasterizer.jar" fork="true">
+            <arg line="-m image/jpeg"/>
+            <arg line="-h 400"/>
+            <arg line="-w 600"/>
+            <arg line="-q 0.99"/>
+            <arg line="${file}"/>
+            <jvmarg value="-Djava.awt.headless=true"/>
+        </java>
+    </target>
+
+    <!--Sending reports-->
+    <target name="makeReport" depends="setVariables">
+        <java jar="${lib.dir}${file.separator}htm2pdf.jar" fork="true">
+            <arg value="${report.dir}"/>
+            <arg value="${report.dir}"/>
+        </java>
+    </target>
+
+    <!-- If ./build/fails file has counter not set to 0 target will create ${fails} property -->
+    <target name="evalFailure">
+        <loadfile property="fails.counter" srcfile="${report.dir}/fails"/>
+        <condition property="fails">
+            <not>
+                <equals arg1="${fails.counter}" arg2="0"/>
+            </not>
+        </condition>
+    </target>
+
+    <!--Get suites which were executed and store info in ${executedSuites} variable-->
+    <target name="getSuites">
+        <loadfile srcfile="${report.dir}${file.separator}suites" property="executedSuites">
+            <filterchain>
+                <trim/>
+                <striplinebreaks/>
+            </filterchain>
+        </loadfile>
+    </target>
+
+    <target name="sendPDFReport" depends="evalFailure, setVariables, getSuites">
+        <foreach target="convertCharts" param="file">
+            <fileset dir="${report.dir}${file.separator}charts" casesensitive="no">
+                <include name="**/*.svg"/>
+            </fileset>
+        </foreach>
+
+        <java jar="${lib.dir}${file.separator}htm2pdf.jar" fork="true">
+            <arg value="${report.dir}"/>
+            <arg value="${report.dir}"/>
+            <arg value="${report.dir}${file.separator}charts"/>
+            <arg value="${config.dir}${file.separator}mailSettings.ini"/>
+            <arg value="${executedSuites}"/>
+            <arg value="Test execution on (${platform} - ${browser})"/>
+        </java>
+    </target>
+
+    <target name="sendPDFReportToMe" depends="setVariables, getSuites">
+        <foreach target="convertCharts" param="file">
+            <fileset dir="${report.dir}${file.separator}charts" casesensitive="no">
+                <include name="**/*.svg"/>
+            </fileset>
+        </foreach>
+
+        <java jar="${lib.dir}${file.separator}htm2pdf.jar" fork="true">
+            <arg value="${report.dir}"/>
+            <arg value="${report.dir}"/>
+            <arg value="${report.dir}${file.separator}charts"/>
+            <arg value="${config.dir}${file.separator}mailSettings.ini"/>
+            <arg value="${executedSuites}"/>
+
+            <arg value="Test execution on (${platform} - ${browser})"/>
+        </java>
+    </target>
+
+    <target name="sendPDFReportAlways" depends="setVariables, getSuites">
+        <foreach target="convertCharts" param="file">
+            <fileset dir="${report.dir}${file.separator}charts" casesensitive="no">
+                <include name="**/*.svg"/>
+            </fileset>
+        </foreach>
+
+        <java jar="${lib.dir}${file.separator}htm2pdf.jar" fork="true">
+            <arg value="${report.dir}"/>
+            <arg value="${report.dir}"/>
+            <arg value="${report.dir}${file.separator}charts"/>
+            <arg value="${config.dir}${file.separator}mailSettings.ini"/>
+            <arg value="${executedSuites}"/>
+            <arg value="timeStats=${report.dir}${file.separator}ExecutionTimes.xls"/>
+            <arg value="Test execution on (${platform} - ${browser})"/>
+        </java>
+    </target>
+
+    <target name="sendPDFReportToOne" if="sendemail" depends="setVariables, getSuites">
+        <foreach target="convertCharts" param="file">
+            <fileset dir="${report.dir}${file.separator}charts" casesensitive="no">
+                <include name="**/*.svg"/>
+            </fileset>
+        </foreach>
+
+        <java jar="${lib.dir}${file.separator}htm2pdf.jar" fork="true">
+            <arg value="${report.dir}"/>
+            <arg value="${report.dir}"/>
+            <arg value="${report.dir}${file.separator}charts"/>
+            <arg value="${config.dir}${file.separator}mailSettings.ini"/>
+            <arg value="${executedSuites}"/>
+            <arg value="${sendemail}"/>
+            <arg value="Test execution on (${platform} - ${browser})"/>
+        </java>
+    </target>
+
+    <!--Test targets-->
+    <target name="testAll" depends="prepare, deleteSerializedData">
+        <taskdef resource="testngtasks" classpath="${lib.dir}${file.separator}testng-6.8.jar"/>
+
+        <path id="classpath">
+            <fileset dir="${lib.dir}" includes="/*.jar"/>
+            <fileset dir="${lib.dir}" includes="/reporting/*.jar"/>
+            <fileset dir="${lib.dir}${file.separator}testlink" includes="*.jar"/>
+            <fileset dir="${jar.dir}" includes="**/*jar"/>
+        </path>
+
+        <testng classpathref="classpath"
+                outputDir="${report.dir}"
+                workingDir="${report.dir}"
+                failureproperty="testngfail"
+                haltOnfailure="false"
+                delegateCommandSystemProperties="true"
+                useDefaultListeners="false"
+                listeners="com.core.reporting.TestListener, org.uncommons.reportng.HTMLReporter, wb.highlevelreporter.PieChartGenerator">
+
+            <xmlfileset dir="${testng.dir}" includes="DemoSuite.xml"/>
+
+            <sysproperty key="org.uncommons.reportng.title" value="Automated Test Report"/>
+            <sysproperty key="org.uncommons.reportng.frames" value="false"/>
+            <sysproperty key="org.uncommons.reportng.stylesheet" value="${reportNGcss}"/>
+            <sysproperty key="org.uncommons.reportng.escape-output" value="false"/>
+
+            <sysproperty key="config.dir" value="${config.dir}"/>
+            <sysproperty key="build.dir" value="${build.dir}"/>
+            <sysproperty key="uixmls.dir" value="${uixmls.dir}"/>
+            <sysproperty key="browsers.dir" value="${browserdrivers.dir}"/>
+            <sysproperty key="report.dir" value="${report.dir}"/>
+
+            <sysproperty key="platform" value="${platform}"/>
+            <sysproperty key="browser" value="${browser}"/>
+            <sysproperty key="baseurl" value="${baseurl}"/>
+
+            <jvmarg value="-Dfile.encoding=cp1251"/>
+            <jvmarg value="-Dlog4j.configuration=file:${config.dir}${file.separator}log4j.properties"/>
+        </testng>
+    </target>
+
+    <target name="demoSuite" depends="prepare, deleteSerializedData">
+        <taskdef resource="testngtasks" classpath="${lib.dir}${file.separator}testng-6.8.jar"/>
+
+        <path id="classpath">
+            <fileset dir="${lib.dir}" includes="/*.jar"/>
+            <fileset dir="${lib.dir}" includes="/reporting/*.jar"/>
+            <fileset dir="${lib.dir}${file.separator}testlink" includes="*.jar"/>
+            <fileset dir="${jar.dir}" includes="**/*jar"/>
+        </path>
+
+        <testng classpathref="classpath"
+                outputDir="${report.dir}"
+                workingDir="${report.dir}"
+                failureproperty="testngfail"
+                haltOnfailure="false"
+                delegateCommandSystemProperties="true"
+                useDefaultListeners="false"
+                listeners="com.core.reporting.TestListener, org.uncommons.reportng.HTMLReporter, wb.highlevelreporter.PieChartGenerator">
+
+            <xmlfileset dir="${testng.dir}" includes="DemoSuite.xml"/>
+
+            <sysproperty key="org.uncommons.reportng.title" value="Automated Test Report"/>
+            <sysproperty key="org.uncommons.reportng.frames" value="false"/>
+            <sysproperty key="org.uncommons.reportng.stylesheet" value="${reportNGcss}"/>
+            <sysproperty key="org.uncommons.reportng.escape-output" value="false"/>
+
+            <sysproperty key="config.dir" value="${config.dir}"/>
+            <sysproperty key="build.dir" value="${build.dir}"/>
+            <sysproperty key="uixmls.dir" value="${uixmls.dir}"/>
+            <sysproperty key="browsers.dir" value="${browserdrivers.dir}"/>
+            <sysproperty key="report.dir" value="${report.dir}"/>
+
+            <sysproperty key="platform" value="${platform}"/>
+            <sysproperty key="browser" value="${browser}"/>
+            <sysproperty key="baseurl" value="${baseurl}"/>
+
+            <jvmarg value="-Dfile.encoding=cp1251"/>
+            <jvmarg value="-Dlog4j.configuration=file:${config.dir}${file.separator}log4j.properties"/>
+            <jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"/>
+        </testng>
+
+    </target>
+
+    <target name="testz" depends="prepare">
+        <taskdef resource="testngtasks" classpath="${lib.dir}${file.separator}testng-6.8.jar"/>
+
+        <path id="classpath">
+            <fileset dir="${lib.dir}" includes="/*.jar"/>
+            <fileset dir="${lib.dir}" includes="/reporting/*.jar"/>
+            <fileset dir="${lib.dir}${file.separator}testlink" includes="*.jar"/>
+            <fileset dir="${jar.dir}" includes="**/*jar"/>
+        </path>
+
+        <testng classpathref="classpath"
+                outputDir="${report.dir}"
+                workingDir="${report.dir}"
+                failureproperty="testngfail"
+                haltOnfailure="false"
+                delegateCommandSystemProperties="true"
+                useDefaultListeners="false"
+                listeners="com.core.reporting.TestListener, org.uncommons.reportng.HTMLReporter, wb.highlevelreporter.PieChartGenerator">
+
+            <xmlfileset dir="${testng.dir}" includes="/debug/*.xml"/>
+
+            <sysproperty key="org.uncommons.reportng.title" value="Automated Test Report"/>
+            <sysproperty key="org.uncommons.reportng.frames" value="false"/>
+            <sysproperty key="org.uncommons.reportng.stylesheet" value="${reportNGcss}"/>
+            <sysproperty key="org.uncommons.reportng.escape-output" value="false"/>
+
+            <sysproperty key="config.dir" value="${config.dir}"/>
+            <sysproperty key="build.dir" value="${build.dir}"/>
+            <sysproperty key="uixmls.dir" value="${uixmls.dir}"/>
+            <sysproperty key="browsers.dir" value="${browserdrivers.dir}"/>
+            <sysproperty key="report.dir" value="${report.dir}"/>
+
+            <sysproperty key="platform" value="${platform}"/>
+            <sysproperty key="browser" value="${browser}"/>
+            <sysproperty key="baseurl" value="${baseurl}"/>
+
+            <jvmarg value="-Dfile.encoding=cp1251"/>
+            <jvmarg value="-Dlog4j.configuration=file:${config.dir}${file.separator}log4j.properties"/>
+            <jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"/>
+        </testng>
+
+    </target>
+
+    <target name="testClass" depends="prepare">
+        <!--To use <if></if> need include contribution library-->
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+            <classpath>
+                <pathelement location="${lib.dir}${file.separator}ant${file.separator}ant-contrib-1.0b3.jar"/>
+            </classpath>
+        </taskdef>
+
+        <if>
+            <isset property="jiranumber"/>
+            <else>
+                <property name="jiranumber" value="0000"/>
+            </else>
+        </if>
+
+        <taskdef resource="testngtasks" classpath="${lib.dir}${file.separator}testng-6.8.jar"/>
+
+        <path id="classpath">
+            <fileset dir="${lib.dir}" includes="/*.jar"/>
+            <fileset dir="${lib.dir}" includes="/reporting/*.jar"/>
+            <fileset dir="${lib.dir}${file.separator}testlink" includes="*.jar"/>
+            <fileset dir="${jar.dir}" includes="**/*jar"/>
+        </path>
+
+        <testng classpathref="classpath"
+                outputDir="${report.dir}"
+                workingDir="${report.dir}"
+                failureproperty="testngfail"
+                haltOnfailure="false"
+                delegateCommandSystemProperties="true"
+                useDefaultListeners="false"
+                listeners="com.core.reporting.TestListener, org.uncommons.reportng.HTMLReporter, wb.highlevelreporter.PieChartGenerator"
+                suitename="Manual Test Execution"
+                testname="Test Jira-${jiranumber}">
+
+            <classfileset
+                    dir="${bin.dir}"
+                    includes="**/Jira${jiranumber}_*.class"/>
+
+            <sysproperty key="org.uncommons.reportng.title" value="Automated Test Report"/>
+            <sysproperty key="org.uncommons.reportng.frames" value="false"/>
+            <sysproperty key="org.uncommons.reportng.stylesheet" value="${reportNGcss}"/>
+            <sysproperty key="org.uncommons.reportng.escape-output" value="false"/>
+
+            <sysproperty key="config.dir" value="${config.dir}"/>
+            <sysproperty key="build.dir" value="${build.dir}"/>
+            <sysproperty key="uixmls.dir" value="${uixmls.dir}"/>
+            <sysproperty key="browsers.dir" value="${browserdrivers.dir}"/>
+            <sysproperty key="report.dir" value="${report.dir}"/>
+
+            <sysproperty key="platform" value="${platform}"/>
+            <sysproperty key="browser" value="${browser}"/>
+            <sysproperty key="baseurl" value="${baseurl}"/>
+
+            <jvmarg value="-Dfile.encoding=cp1251"/>
+            <jvmarg value="-Dlog4j.configuration=file:${config.dir}${file.separator}log4j.properties"/>
+        </testng>
+    </target>
+
+</project>
+
+
