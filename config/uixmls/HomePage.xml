@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Elements>
+
+    <WebElement name="pageIndex">
+        <css>.wind-8-container</css>
+    </WebElement>
+
+    <!--=============================================================================================-->
+    <!-- Management information box -->
+    <!--=============================================================================================-->
+
+    <WebElement name="internalDataManagementButton">
+        <css>.wind-8-container a[href^='DataManagement']</css>
+    </WebElement>
+
+    <WebElement name="externalDataManagementButton">
+        <css>.wind-8-container a[href^='ExternalDataManagement']</css>
+    </WebElement>
+
+    <WebElement name="caseManagementButton">
+        <css>.wind-8-container a[href^='Compliance'][id*='MI']</css>
+    </WebElement>
+
+    <WebElement name="reportsButton">
+        <css>.wind-8-container a[href^='Pages/Reports'][id*='MI']</css>
+    </WebElement>
+
+    <WebElement name="advancedSearchButton">
+        <css>.wind-8-container a[href^='Pages/AdSearch']</css>
+    </WebElement>
+
+    <!--=============================================================================================-->
+    <!-- Operational management box -->
+    <!--=============================================================================================-->
+
+    <WebElement name="caseFlowManagementButton">
+        <css>.wind-8-container a[href^='Compliance/Default'][id*='OM']</css>
+    </WebElement>
+
+    <WebElement name="assignCasesButton">
+        <css>.wind-8-container a[href$='Assign+Cases'][id*='OM']</css>
+    </WebElement>
+
+    <WebElement name="profileRecordsButton">
+        <css>.wind-8-container a[href^='RecordMatching'][id*='OM']</css>
+    </WebElement>
+
+    <WebElement name="systemAdministratorButton">
+        <css>.wind-8-container a[href^='SystemAdmin'][id*='OM']</css>
+    </WebElement>
+
+    <WebElement name="assignCasesToRemoveButton">
+        <css>.wind-8-container a[href^='Compliance/MatchSearch'][href*='StatusID'][id*='OM']</css>
+    </WebElement>
+
+    <WebElement name="opMyAlerts">
+        <css>.wind-8-container a[href^='Default'][id*='OM']</css>
+    </WebElement>
+
+    <!--=============================================================================================-->
+    <!-- Supervisor box -->
+    <!--=============================================================================================-->
+
+    <WebElement name="supervisorAssignCasesButton">
+        <xpath>//a[contains(@id, 'phSilverlight')][span[@class = 'tile-text' and text() = 'Assign Cases']]</xpath>
+    </WebElement>
+
+    <WebElement name="supervisorBulkAuthoriseMatchedCasesButton">
+        <xpath>//a[contains(@id, 'phSilverlight')][span[@class = 'tile-text' and text() = 'Bulk Authorise Matched Cases']]</xpath>
+    </WebElement>
+
+    <WebElement name="supervisorAuthoriseCasesValidRecordsButton">
+        <xpath>//a[contains(@id, 'phSilverlight')][span[@class = 'tile-text' and text() = 'Authorise Cases - Valid Records']]</xpath>
+    </WebElement>
+
+    <WebElement name="supervisorMatchesRequiringFurtherReviewButton">
+        <xpath>//a[contains(@id, 'phSilverlight')][span[@class = 'tile-text' and text() = 'Matches Requiring Further Review']]</xpath>
+    </WebElement>
+
+    <WebElement name="supervisorRecordsIncorrectlyEnteredButton">
+        <css>a[id$=Inc]</css>
+    </WebElement>
+
+    <WebElement name="supervisorAuthoriseCasesInactiveRecordButton">
+        <xpath>//a[contains(@id, 'phSilverlight')][span[@class = 'tile-text' and text() = 'Authorise Cases - Inactive Record']]</xpath>
+    </WebElement>
+
+    <WebElement name="supervisorAuthoriseCasesNeedsMoreInformationButton">
+        <css>a[id$='AuthoriseCasesNeedsMoreInformation']</css>
+    </WebElement>
+
+    <WebElement name="supervisorAuthoriseCasesMatchedToInactiveButton">
+        <css>a[id$='AuthoriseCasesMatchedToInactive']</css>
+    </WebElement>
+
+    <WebElement name="supervisorAuthoriseCasesToBeRemovedButton">
+        <css>a[id$='AuthoriseCasesToBeRemoved']</css>
+    </WebElement>
+
+    <WebElement name="supervisorMyAlertsFirstButton">
+        <xpath>//div[h3[text()='Supervisor']]/a[contains(@id, 'phSilverlight') and text() = 'My Alerts']</xpath>
+    </WebElement>
+
+    <WebElement name="supervisorDataExtractAssignCasesButton">
+        <css>a[id$='DataExtractAssignCases']</css>
+    </WebElement>
+
+    <WebElement name="supervisorChangedExternalValueCasesButton">
+        <css>a[id$='ChangedExternalValueCases']</css>
+    </WebElement>
+
+    <WebElement name="supervisorDifferentExternalValueCasesButton">
+        <css>a[id$='DifferentExternalValueCases']</css>
+    </WebElement>
+
+    <WebElement name="supervisorMultipleExternalValueCasesButton">
+        <css>a[id$='MultipleExternalValueCases']</css>
+    </WebElement>
+
+    <WebElement name="supervisorSingleExternalValueCasesButton">
+        <css>a[id$='SingleExternalValueCases']</css>
+    </WebElement>
+
+    <WebElement name="supervisorFormatErrorCasesButton">
+        <css>a[id$='FormatErrorCases']</css>
+    </WebElement>
+
+    <WebElement name="supervisorAttributeCasesAlertButton">
+        <css>a[id$='AttributeCasesAlert']</css>
+    </WebElement>
+
+    <!--=============================================================================================-->
+    <!-- Processor box -->
+    <!--=============================================================================================-->
+
+    <WebElement name="processorAllMyCasesButton">
+        <css>a[id*='pro'][href*='ShowAll']</css>
+    </WebElement>
+
+    <WebElement name="processCasesButton">
+        <css>a[id*='pro'][href^='Compliance/Process']:not([href*='ShowAll'])</css>
+    </WebElement>
+
+    <WebElement name="processorProfileRecordsButton">
+        <css>a[id*='pro'][href^='RecordMatching']</css>
+    </WebElement>
+
+    <WebElement name="processorCasesRequiredMoreInformationButton">
+        <xpath>//a[contains(@id, 'pro') and text() = 'Cases Requiring more Information']</xpath>
+    </WebElement>
+
+    <WebElement name="processorTasksListButton">
+        <css>.wind-8-tasks</css>
+    </WebElement>
+
+    <WebElement name="processorEmailButton">
+        <css>.wind-8-email</css>
+    </WebElement>
+
+    <WebElement name="processorMyAlertsButton">
+        <css>a[id*='pro'][href^='Default']</css>
+    </WebElement>
+
+</Elements>

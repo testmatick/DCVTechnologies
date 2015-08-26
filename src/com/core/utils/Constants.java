@@ -22,6 +22,8 @@ public class Constants {
     public static boolean TESTLINK_ENABLED = true;
 
 
-    public static String BASE_URL = System.getProperty("baseurl", "https://google.com");  // Debug server by default. Needed change value before test execution
+    public static String BASE_URL = System.getProperty("baseurl", "https://demo.intelligentdataconnections.com");  // Debug server by default. Needed change value before test execution
+    public static final String DEFAULT_USER_LOGIN = "DCVTechnologies";
+    public static final String DEFAULT_USER_PASSWORD = "Oh5z3a8oF3";
 
 }

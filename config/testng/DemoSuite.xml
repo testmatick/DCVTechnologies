@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="P1 Test Suite" verbose="1">
+<suite name="Demo Suite" verbose="1">
 
+    <!--<test name="Verify login page">-->
+        <!--<classes>-->
+            <!--<class name="com.autotests.tests.VerifyLoginPage"/>-->
+        <!--</classes>-->
+    <!--</test>-->
 
-    <test name="Verify login page">
+    <test name="Verify home page content">
         <classes>
-            <class name="com.autotests.tests.VerifyLoginPage"/>
+            <class name="com.autotests.tests.VerifyHomePageContent"/>
         </classes>
     </test>
+
 
 
 </suite>

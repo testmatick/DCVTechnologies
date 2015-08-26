@@ -1,56 +1,49 @@
 package com.autotests.pages;
 
-
 import com.core.base.BasePage;
 import com.core.reporting.Reporter;
 import com.core.utils.Constants;
-import org.openqa.selenium.NoSuchWindowException;
-import org.openqa.selenium.SessionNotCreatedException;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 
 public class LoginPage extends BasePage {
 
+    public void openLoginPage(){
+        driver.get(Constants.BASE_URL);
+    }
+
     public void waitForPageToLoad(){
         Reporter.log("Waiting `Login` page loads");
-        waitForElementPresent("loginFlow");
+        waitForElementPresent("pageIndex");
     }
 
     public void typeLogin(String login) {
-        waitForElementVisibility("loginField");
-        type("Typing login : " + login, login, "loginField");
+        waitForElementVisibility("loginInput");
+        type("Typing login : " + login, login, "loginInput");
     }
 
     public void typePassword(String password) {
-        type("Typing password : " + password, password, "passwordField");
+        type("Typing password : " + password, password, "loginPassword");
     }
 
     public void clickLoginButton() {
-        click("Clicking login button", "signInButton");
-        waitForElementInvisibility("loader");
-    }
-
-    public boolean isPageOpened(){
-        Reporter.log("Checking `Login` page opened");
-        return isElementPresent("loginFlow");
+        click("Clicking login button", "loginButton");
     }
 
     public boolean isErrorVisible(){
-        Reporter.log("Checking error message visibility");
-        return isElementVisible("errorMessage");
+        return !getElementText("Checking error message visibility", "errorMessage").isEmpty();
     }
 
-    public String getErrorText(){
-        return getElementText("Getting error text", "errorMessage");
+    public void clickForgottenPasswordLink(){
+        click("Clicking forgotten password link", "forgottenPasswordLink");
+        waitForElementPresent("pageIndex");
     }
 
-    public void setRememberMeCheckboxState(boolean state){
-        setCheckboxState("Set remember me checkbox checked: " + state, state, "rememberMeCheckbox");
+    public void typeRestoringPasswordUsername(String username){
+        type("Typing restoring password username : " + username, username, "forgottenPassUsernameInput");
+    }
+
+    public void clickSubmitRestorePasswordButton(){
+        click("Clicking submit restore password button", "restorePasswordButton");
+        waitForPageToLoad();
     }
 
 }

@@ -1,31 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Elements>
 
-    <WebElement name="loginFlow">
-        <css>#layer-login[style*='display: block']</css>
+    <WebElement name="pageIndex">
+        <id>login-form</id>
     </WebElement>
 
-    <WebElement name="loginField">
-        <id>login</id>
+    <WebElement name="loginInput">
+        <id>Login1_UserName</id>
     </WebElement>
 
-    <WebElement name="passwordField">
-        <id>pwd</id>
+    <WebElement name="loginPassword">
+        <id>Login1_Password</id>
     </WebElement>
 
-    <WebElement name="signInButton">
-        <id>sign-in</id>
+    <WebElement name="loginButton">
+        <id>Login1_Login</id>
     </WebElement>
 
     <WebElement name="errorMessage">
-        <css>#alert-danger .inline-block</css>
+        <css>#login-form .red:not([style*='display: none'])</css>
     </WebElement>
 
-    <WebElement name="loader">
-        <id>loading-indicator</id>
+    <WebElement name="forgottenPasswordLink">
+        <css>a[href^='ForgottenPassword']</css>
     </WebElement>
 
-    <WebElement name="rememberMeCheckbox">
-        <id>remember_me</id>
+    <WebElement name="forgottenPassUsernameInput">
+        <id>PasswordRecovery1_UserNameContainerID_Username</id>
+    </WebElement>
+
+    <WebElement name="restorePasswordButton">
+        <id>PasswordRecovery1_UserNameContainerID_SubmitButton</id>
     </WebElement>
 </Elements>

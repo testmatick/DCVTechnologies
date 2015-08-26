@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Elements>
+
+    <WebElement name="pageIndex">
+        <css>.mainContentContainer</css>
+    </WebElement>
+
+    <!--=============================================================================================-->
+    <!-- Search form -->
+    <!--=============================================================================================-->
+
+    <WebElement name="orgNameInput">
+        <css>input[id$='orgNameSearch']</css>
+    </WebElement>
+
+    <WebElement name="orgTypeSelector">
+        <css>select[id$='orgTypeSearch']</css>
+    </WebElement>
+
+    <WebElement name="excludeOrgTypeCheckbox">
+        <css>input[id$='orgTypeMinus']</css>
+    </WebElement>
+
+    <WebElement name="searchButton">
+        <css>input[id$='orgSearch']</css>
+    </WebElement>
+
+    <!--=============================================================================================-->
+    <!-- Exact Matches list -->
+    <!--=============================================================================================-->
+
+    <WebElement name="resultsConclusions">
+        <xpath>//td[select[contains(@id, 'pageSize')] and contains(@id, 'exactOrg')]</xpath>
+    </WebElement>
+
+    <WebElement name="searchedRecords">
+        <css>div[id*='upOrgExact'] table .collapsedRow</css>
+    </WebElement>
+
+    <WebElement name="searchedItemOrgType">
+        <css>//div[contains(@id, 'upOrgExact')]/table//tr/td[count(//div[contains(@id, 'upOrgExact')]/table//th[text() = 'Organisation Type']/preceding-sibling::*)+1]</css>
+    </WebElement>
+
+</Elements>
