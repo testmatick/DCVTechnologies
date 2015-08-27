@@ -1,6 +1,5 @@
 package com.autotests.pages;
 
-import com.autotests.control.Pages;
 import com.core.base.BasePage;
 import org.openqa.selenium.WebElement;
 import com.core.reporting.Reporter;
@@ -13,6 +12,7 @@ import java.util.regex.Pattern;
 public class AdvancedSearch extends BasePage{
 
     public void waitForPageToLoad(){
+        wait(2);
         Reporter.log("Waiting `Advanced Search` page to load");
         switchToNewTab();
         waitForElementVisibility("pageIndex");
