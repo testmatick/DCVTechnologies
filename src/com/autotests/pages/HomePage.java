@@ -11,7 +11,7 @@ public class HomePage extends BasePage{
     }
 
     public void clickAdvancedSearchButton(){
-        click("Clicking advanced search button", "internalDataManagementButton");
+        click("Clicking advanced search button", "advancedSearchButton");
     }
 
     public boolean isInternalDataManagementButtonPresent(){

@@ -41,4 +41,12 @@
         <css>//div[contains(@id, 'upOrgExact')]/table//tr/td[count(//div[contains(@id, 'upOrgExact')]/table//th[text() = 'Organisation Type']/preceding-sibling::*)+1]</css>
     </WebElement>
 
+    <!--=============================================================================================-->
+    <!-- Support locators -->
+    <!--=============================================================================================-->
+
+    <WebElement name="searchLoader">
+        <css>div[id*='UpdateProgress']</css>
+    </WebElement>
+
 </Elements>

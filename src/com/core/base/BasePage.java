@@ -132,7 +132,7 @@ public class BasePage {
 
         Select dropDownList = new Select(this.getElement(locatorName, args));
         WebElement select = this.getElement(locatorName, args);
-        WebElement option = select.findElement(By.xpath(".//option[contains(text(),'" + selectItemText + "')]"));
+        WebElement option = select.findElement(By.xpath(".//option[text() = '" + selectItemText + "']"));
         String optionValue = option.getAttribute("value");
         // if element has wrong value we can try select item only by text
         try {

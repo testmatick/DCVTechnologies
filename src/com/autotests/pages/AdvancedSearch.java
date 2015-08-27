@@ -1,16 +1,20 @@
 package com.autotests.pages;
 
+import com.autotests.control.Pages;
 import com.core.base.BasePage;
 import org.openqa.selenium.WebElement;
 import com.core.reporting.Reporter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AdvancedSearch extends BasePage{
 
     public void waitForPageToLoad(){
         Reporter.log("Waiting `Advanced Search` page to load");
+        switchToNewTab();
         waitForElementVisibility("pageIndex");
     }
 
@@ -29,11 +33,14 @@ public class AdvancedSearch extends BasePage{
 
     public void clickSearchButton(){
         click("Clicking search button", "searchButton");
+        waitForElementVisibility("searchLoader");
+        waitForElementInvisibility("searchLoader");
     }
 
-    public int searchedOrganizationsCount() {
-        //todo write pattern and get data by it
-        return 1;
+    public int getSearchedOrganizationsCount() {
+        Pattern pattern = Pattern.compile("Results: (\\d+).*");
+        Matcher matcher = pattern.matcher(getElementText("Getting searching results conclusions", "resultsConclusions"));
+        return matcher.find() ? Integer.valueOf(matcher.group(1)) : 0;
     }
 
     public int getDisplayedSearchedOrganizationsCount(){
